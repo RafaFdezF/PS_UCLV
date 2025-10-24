@@ -1,0 +1,10 @@
+### 4. Queremos modificar este código para que se deje pasar un intervalo de 3 segundos
+antes de crear el siguiente proceso. Indica qué líneas de código añadirías y en qué posición
+para conseguir este efecto
+
+La linea de codigo que añadiría seria sleep(3); justo antes de hacer el fork dentro del bucle for osea:
+for (i = 0; i < nhijos; i++) {
+    sleep(3); 
+    ret = fork();
+    ...
+}

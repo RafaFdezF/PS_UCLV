@@ -1,0 +1,106 @@
+### 1. ¿Qué es una señal?
+
+Una señal es una interrupción generada por el software que se envía a un proceso con el objetivo 
+de informarle sobre la ocurrencia de algún evento o de modificar su comportamiento. Estas señales
+son asíncronas, lo que significa que pueden producirse en cualquier momento, interrumpiendo la ejecución
+normal del proceso sin que este las haya anticipado. Este mecanismo es fundamental en sistemas operativos 
+multitarea, como Unix/Linux, ya que permite la comunicación entre procesos y con el propio sistema operativo,
+facilitando la notificación de eventos importantes como la terminación de otro proceso, la llegada de datos,
+o situaciones de error. Al recibir una señal, el proceso puede decidir cómo manejarla, ya sea terminando 
+su ejecución, ignorándola o realizando alguna acción específica, dependiendo de cómo esté configurado
+para responder a esa señal.
+
+### a. ¿Cuáles acciones se pueden tomar para su tratamiento?
+Cuando un proceso recibe una señal, existen varias acciones que se pueden tomar para su tratamiento:
+-Manejo de la señal: El proceso puede definir un manejador para interceptar la señal y responder de manera
+controlada. Por ejemplo, un proceso puede manejar la señal SIGINT (que ocurre al presionar Ctrl+C) para 
+realizar una limpieza antes de finalizar, o responder adecuadamente a una señal de terminación como SIGTERM.
+-Ignorar la señal: En algunos casos, un proceso puede optar por ignorar una señal. Esto se logra configurando
+el manejador de la señal para que no realice ninguna acción. Sin embargo, no todas las señales pueden ser 
+ignoradas.
+-Terminar el proceso: Si un proceso no captura una señal, el sistema operativo tomará una acción predeterminada. Por ejemplo, al recibir SIGTERM sin un manejador específico, el sistema terminará el proceso de manera controlada.
+-Suspensión del proceso: Algunas señales, como SIGSTOP, hacen que el proceso se suspenda temporalmente. 
+Esta acción no puede ser ignorada, y el proceso solo podrá reanudarse con la señal correspondiente, 
+como SIGCONT.
+
+### b. ¿Todas las señales pueden ser ignoradas?
+No, no todas las señales pueden ser ignoradas. Algunas señales están diseñadas para garantizar 
+que un proceso pueda ser detenido o finalizado en situaciones críticas, y por lo tanto, no pueden 
+ser ignoradas ni manejadas. Un ejemplo de estas señales es SIGKILL, que termina un proceso de manera 
+inmediata sin posibilidad de captura ni de manejo. Lo mismo ocurre con SIGSTOP, que suspende un proceso 
+sin que este pueda evitarlo. Sin embargo, otras señales, como SIGTERM o SIGINT, pueden ser manejadas o 
+incluso ignoradas por el proceso, dependiendo de cómo se configure.
+
+### 2. ¿Cómo pueden ser enviadas señales a un proceso?
+
+Las señales pueden ser enviadas a un proceso de varias maneras, dependiendo de la situación y del sistema 
+operativo. A continuación, se explican los métodos más comunes para enviar señales a un proceso 
+en un sistema Unix/Linux:
+    1. Generación desde otro proceso: Una forma común de enviar señales a un proceso es mediante la función 
+    kill(). Esta función permite que un proceso envíe una señal a otro proceso, especificando su PID 
+    (Identificador de Proceso) y la señal que se desea enviar. La sintaxis básica de esta función es:
+   int kill(pid_t pid, int sig);
+    • pid: es el PID del proceso que recibirá la señal.
+    • sig: es la señal que se enviará, como SIGTERM, SIGKILL, SIGINT, entre otras.
+Además, se puede usar la función sigsend(), que ofrece una forma más avanzada y flexible de enviar señales, 
+permitiendo un control más detallado sobre los destinatarios de la señal.
+
+    2. Uso del comando kill en la consola: En la terminal, el comando kill se utiliza para enviar señales 
+    a procesos en ejecución. Aunque el nombre "kill" sugiera que solo se usa para terminar procesos, 
+    en realidad puede enviar cualquier tipo de señal. Si no se especifica la señal, el comando kill 
+    por defecto envía la señal SIGTERM, que solicita la terminación del proceso.
+La sintaxis básica es:
+kill [opciones] PID
+Ejemplos de cómo usarlo:
+    • Para enviar una señal SIGINT (interrupción, equivalente a presionar Ctrl+C en la terminal) a 
+    un proceso con PID 1234:
+kill -SIGINT 1234
+    • Para enviar una señal SIGTERM (terminación) a un proceso:
+kill 1234
+o también
+kill -SIGTERM 1234
+    • Para enviar una señal SIGKILL (terminación forzada) a un proceso:
+kill -SIGKILL 1234
+    3. Generación desde un temporizador: Los sistemas operativos pueden utilizar temporizadores 
+    para generar señales en momentos específicos, como la señal SIGALRM, que es enviada a un proceso 
+    después de un tiempo determinado. Esto se puede usar para realizar tareas programadas o para controlar 
+    la ejecución de procesos.
+    4. Excepciones y eventos del sistema: Las señales también pueden ser generadas automáticamente 
+    por el sistema operativo como respuesta a eventos o excepciones en la ejecución de un proceso, 
+    como errores de segmentación (SIGSEGV) o violaciones de acceso a memoria. Estos eventos causan 
+    que el sistema envíe una señal al proceso involucrado.
+    5. Generación desde el propio proceso: Un proceso también puede enviar señales a sí mismo 
+    utilizando la función raise(), lo que puede ser útil para controlar su propio flujo de ejecución, 
+    como terminarse o interrumpirse en determinadas condiciones.
+
+### 3.Muestre las señales disponibles en su sistema:
+
+En Linux, puedes ver las señales disponibles ejecutando en la terminal: kill -l
+
+Señales disponibles en Windows:
+SIGABRT = 22
+SIGFPE  = 8
+SIGILL  = 4
+SIGINT  = 2
+SIGSEGV = 11
+SIGTERM = 15
+
+### 4. Cual es la salida del siguiente programa:
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+int main(void) {
+printf ("Antes de enviar la señal ...");
+kill (getpid(),SIGINT);
+printf ("Después de recibir la señal ...");
+return 0;
+}
+
+La salida seria:
+Antes de enviar la señal  ... 
+
+El programa nunca llega a ejecutar la línea "Después de recibir la señal ...",porque el proceso muere 
+justo al recibir SIGINT ya que llama a kill(getpid(), SIGINT) ,le envía la señal SIGINT a sí mismo y 
+como no hay manejador (signal handler) definido, la acción por defecto de SIGINT es terminar el proceso.
+ 

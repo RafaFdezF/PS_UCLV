@@ -1,0 +1,27 @@
+# Compilar archivos objeto
+gcc -c crear.c -o crear.o
+gcc -c inicializar.c -o inicializar.o
+gcc -c operaciones.c -o operaciones.o -lm
+gcc -c mostrar.c -o mostrar.o
+
+
+
+
+# Crear la biblioteca estática
+ar rcs libvector.a crear.o inicializar.o operaciones.o mostrar.o
+
+# Compilar el programa principal con la biblioteca estática
+gcc -o programa_estatico main.c libvector.a -lm
+
+
+
+
+# Crear la biblioteca dinámica
+gcc -shared -o libvector.so crear.c inicializar.c operaciones.c mostrar.c -lm
+
+# Compilar el programa principal con la biblioteca dinámica
+gcc -o programa_dinamico main.c -L. -lvector -lm
+
+# Para ejecutar (configurar la ruta de bibliotecas)
+export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+./programa_dinamico

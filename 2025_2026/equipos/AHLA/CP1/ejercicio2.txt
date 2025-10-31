@@ -1,0 +1,25 @@
+Ejercicio 2 - Secuencias de construcción:
+
+PARA LINUX:
+
+a) Biblioteca estática:
+   - gcc -c vectors.c -o vectors.o
+   - ar rcs libvectores.a vectors.o  
+   - gcc -o programa_principal main.c -L. -lvectores -lm
+
+b) Biblioteca compartida:
+   - gcc -shared -fPIC -o libvectores.so vectors.c -lm
+   - gcc -o programa_principal main.c -L. -lvectores -lm
+   - export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+
+PARA WINDOWS:
+
+a) Biblioteca estática:
+   - gcc -c vectors.c -o vectors.o
+   - ar rcs libvectores.a vectors.o  
+   - gcc -o programa_principal.exe main.c -L. -lvectores -lm
+
+b) Biblioteca compartida (DLL):
+   - gcc -shared -o vectores.dll vectors.c -lm
+   - gcc -o programa_principal.exe main.c -L. -lvectores -lm
+

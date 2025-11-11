@@ -1,0 +1,8 @@
+gcc -c vector.c -o vector.o
+ar rcs libvector.a vector.o
+gcc main.c -L. -lvector -o programa
+
+
+gcc -c -fPIC vector.c -o vector.o
+gcc -shared -o libvector.dll vector.o
+gcc main.c -L. -lvector -o programa.exe
